@@ -1,4 +1,4 @@
-./output/main.o: ..\User\main.c \
+./output/24cxx.o: ..\Hardware\EEPROM\24cxx.c ..\Hardware\EEPROM\24cxx.h \
   ..\Firmware\CMSIS\GD\GD32E23x\Include\gd32e23x.h \
   D:\keil_539\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm23.h \
   D:\keil_539\ARM\ARMCLANG\include\stdint.h \
@@ -26,7 +26,5 @@
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_wwdgt.h \
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_misc.h \
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_cmp.h \
-  ..\User\systick.h D:\keil_539\ARM\ARMCLANG\include\stdio.h \
-  D:\keil_539\ARM\ARMCLANG\include\stdlib.h ..\User\gd32e23x_it.h \
-  ..\Hardware\PORG_RS485\PORG_RS485.h ..\Hardware\data\data.h \
-  ..\Hardware\EEPROM\24cxx.h ..\Hardware\IIC\IIC.h
+  ..\User\systick.h D:\keil_539\ARM\ARMCLANG\include\stdlib.h \
+  D:\keil_539\ARM\ARMCLANG\include\stdio.h ..\Hardware\IIC\IIC.h
