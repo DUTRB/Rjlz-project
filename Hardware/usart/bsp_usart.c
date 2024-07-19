@@ -118,20 +118,20 @@ int fputc(int ch, FILE *f)
 返 回 值 ： 无
 作    者 ： LC
 *************************************************/
-void BSP_USART_IRQHandler(void)
-{
-	if(usart_interrupt_flag_get(BSP_USART,USART_INT_FLAG_RBNE) == SET)   // 接收缓冲区不为空
-	{
-		g_recv_buff[g_recv_length++] = usart_data_receive(BSP_USART);      // 把接收到的数据放到缓冲区中
-	}
-	
-	if(usart_interrupt_flag_get(BSP_USART,USART_INT_FLAG_IDLE) == SET)   // 检测到帧中断
-	{
-		usart_data_receive(BSP_USART);                                     // 必须要读，读出来的值不能要
-		g_recv_buff[g_recv_length] = '\0';																 // 数据接收完毕，数组结束标志
-		g_recv_complete_flag = 1;                                          // 接收完成
-		usart_interrupt_flag_clear(USART0, USART_INT_FLAG_IDLE);		
-	}
-	
-}
+//void BSP_USART_IRQHandler(void)
+//{
+//	if(usart_interrupt_flag_get(BSP_USART,USART_INT_FLAG_RBNE) == SET)   // 接收缓冲区不为空
+//	{
+//		g_recv_buff[g_recv_length++] = usart_data_receive(BSP_USART);      // 把接收到的数据放到缓冲区中
+//	}
+//	
+//	if(usart_interrupt_flag_get(BSP_USART,USART_INT_FLAG_IDLE) == SET)   // 检测到帧中断
+//	{
+//		usart_data_receive(BSP_USART);                                     // 必须要读，读出来的值不能要
+//		g_recv_buff[g_recv_length] = '\0';																 // 数据接收完毕，数组结束标志
+//		g_recv_complete_flag = 1;                                          // 接收完成
+//		usart_interrupt_flag_clear(USART0, USART_INT_FLAG_IDLE);		
+//	}
+//	
+//}
 

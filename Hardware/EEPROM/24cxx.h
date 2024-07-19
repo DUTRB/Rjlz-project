@@ -6,11 +6,8 @@
 #include "systick.h"
 #include <stdlib.h>
 #include <stdio.h>
-//#include "gd32f350r_eval.h"
+#include "gd32f350r_eval.h"
 #include "IIC.h"
-
-
-
 
 /* 宏定义芯片的存储阵列字地址范围，比如AT24C02为0-255 */
 #define AT24C01		127

@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>GD32E230</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Firmware\GD32E23x_standard_peripheral\Include;..\Firmware\CMSIS;..\Firmware\CMSIS\GD\GD32E23x\Include;..\User;..\Hardware;..\Hardware\usart;..\Hardware\data;..\Hardware\EEPROM;..\Hardware\IIC;..\Hardware\PORG_RS485</IncludePath>
+              <IncludePath>..\Firmware\GD32E23x_standard_peripheral\Include;..\Firmware\CMSIS;..\Firmware\CMSIS\GD\GD32E23x\Include;..\User;..\Hardware;..\Hardware\usart;..\Hardware\data;..\Hardware\EEPROM;..\Hardware\IIC;..\Hardware\PORG_RS485;..\Hardware\utility;..\Hardware\ADC;..\Hardware\DS18B20;..\Hardware\SGP30</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -428,6 +428,26 @@
               <FileName>PORG_RS485.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\PORG_RS485\PORG_RS485.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f350r_eval.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\utility\gd32f350r_eval.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\ADC\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ds18b20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DS18B20\bsp_ds18b20.c</FilePath>
+            </File>
+            <File>
+              <FileName>sgp30.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\SGP30\sgp30.c</FilePath>
             </File>
           </Files>
         </Group>

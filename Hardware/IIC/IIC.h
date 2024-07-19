@@ -12,15 +12,14 @@
 #define  u16 uint16_t
 #define  u32 uint32_t
 
-/* SCL：PB14，SDA：PB13 */
-#define SCL_GPIO GPIOB
-#define SCL_PIN GPIO_PIN_1
+/* SCL：PA0，SDA：PA1 */
+#define SCL_GPIO GPIOA
+#define SCL_PIN GPIO_PIN_0
 #define SDA_GPIO GPIOA
-#define SDA_PIN GPIO_PIN_7
+#define SDA_PIN GPIO_PIN_1
 
 #define SDA_IN()	{gpio_mode_set(SDA_GPIO, GPIO_MODE_INPUT, GPIO_PUPD_NONE, SDA_PIN); }	//SDA：复位，PB13上拉/下拉输入    
 #define SDA_OUT()	{gpio_mode_set(SDA_GPIO, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, SDA_PIN);}	//SDA：复位，PB13通用推挽输出50Hz     
-
 
 
 

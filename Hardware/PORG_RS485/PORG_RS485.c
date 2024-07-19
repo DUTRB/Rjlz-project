@@ -1,5 +1,5 @@
 #include "PORG_RS485.h"
-//#include "gd32f350r_eval.h"
+#include "gd32f350r_eval.h"
 //#include "gd32f3x0_it.h"
 #include "gd32e23x_it.h"
 #include "data.h"
@@ -30,7 +30,7 @@ union  GLQ_TEST
 //;-------------------------------------------------------------------
 //;RS485_INI_DATA();//RS485数据初始化子程序
 //;-------------------------------------------------------------------
-void RS485_INI_DATA()
+void RS485_init_data()
 {
     uchar i=0;
     for(i=0; i<TR_MAX_COUNTER; i++)     R_DATA[i]=0; //RS485收发缓冲区
@@ -56,10 +56,10 @@ void out_rs485(uchar i)
     //TR_JISHU = 0;							//计数已经发送的字节数
     for(y=0; y < i; ++y)
     {
-        usart_data_transmit(EVAL_COM1,(uint8_t)T_DATA[y]);
-        while(RESET == usart_flag_get(EVAL_COM1, USART_FLAG_TBE));//等待数据发送完成
+        usart_data_transmit(USART0,(uint8_t)T_DATA[y]);
+        while(RESET == usart_flag_get(USART0, USART_FLAG_TBE));//等待数据发送完成
     }
-    while(RESET == usart_flag_get(EVAL_COM1, USART_FLAG_TC));//等待数据转换完成
+    while(RESET == usart_flag_get(USART0, USART_FLAG_TC));//等待数据转换完成
     TR_JISHU = 0;
     RS485_RX;
     //usart_interrupt_enable(EVAL_COM1, USART_INT_TBE);//开启发送中断
@@ -68,9 +68,9 @@ void out_rs485(uchar i)
 
 
 //;-------------------------------------------------------------------
-//RS485_PROG();    //rs485通信处理子程序
+//rs485通信处理子程序
 //;-------------------------------------------------------------------
-void RS485_PROG()  //rs485通信处理子程序
+void RS485_PROG() 
 {
     uchar i = 0;
     //data OBS_AIR,Smoke_AIR,OBS_N2,Smoke_N2;
@@ -324,7 +324,7 @@ void int_RX(void)
 	
     if(TR_JISHU == 0)//RS485接收数据命令地址码
     {
-        R_DATA[0] = usart_data_receive(EVAL_COM1);//接收命令地址码
+        R_DATA[0] = usart_data_receive(USART0);//接收命令地址码
 
         if( net_control_data == R_DATA[0]) //相同，说明是第2次接收命令地址字节
         {
@@ -419,10 +419,10 @@ void int_TX(void)
 {
     if ( TR_JISHU < T_counter )//数据没发送完
     {
-        usart_data_transmit(EVAL_COM1, T_DATA[TR_JISHU++]);
+        usart_data_transmit(USART0, T_DATA[TR_JISHU++]);
     }
     else { //数据发送完
-        usart_interrupt_disable(EVAL_COM1, USART_INT_TBE);
+        usart_interrupt_disable(USART0, USART_INT_TBE);
         TR_JISHU       = 0;
         T_counter      = 0;
         R_counter      = 0;

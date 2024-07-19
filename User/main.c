@@ -1,47 +1,272 @@
-/******************************************************************************
-  * 测试硬件：GD32E230C8T6    使用主频72Mhz    晶振8Mhz
-  * 版 本 号: V1.0
-  * 修改作者: rubo
-  * 修改日期: 2024年7月9日
-  * 功能介绍: 热解粒子主控板程序
- ******************************************************************************/
-#include "gd32e23x.h"
-#include "systick.h"
-#include <stdio.h>
+/**
+	@HARDWARE	:	GD32E230C8T6    使用主频72Mhz    晶振8Mhz
+  @VISION		: V1.0
+	@AUTHOR		: RUBO
+	@DATE			: 2024年7月9日
+	@FUNCTION	: 热解粒子主控板程序
+*/
 
-//#include "gd32f3x0.h"
-#include "systick.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "main.h"
 
-//#include "gd32f350r_eval.h"
-#include "gd32e23x_it.h"
-#include "PORG_RS485.h"
-#include "data.h"
-#include "24cxx.h"
+
+/**
+	@brief: 串口中断处理函数
+*/
+void USART0_IRQHandler(void)
+{
+    //接收中断
+    if (RESET != usart_interrupt_flag_get(USART0, USART_INT_FLAG_RBNE)) {
+        usart_interrupt_flag_clear(USART0, USART_INT_FLAG_RBNE);
+        int_RX();
+    }
+}
+/**
+	@brief: 定时器2中断处理函数，定时周期1ms
+*/
+void TIMER2_IRQHandler(void)
+{
+    if ( timer_interrupt_flag_get(TIMER2, TIMER_INT_UP) != RESET )
+    {
+        TIM_Cnt++;
+        if(TIM_Cnt >= 1000)
+        {
+            TIM_Cnt = 0;
+						// 激光闪亮设置
+            gpio_bit_set(GPIOA, GPIO_PIN_8);
+						gpio_bit_reset(GPIOA, GPIO_PIN_15);
+        }
+        else
+        {
+            if(TIM_Cnt == LEDP_TIME) SEC_LDOP_TEST = 1;//激光值采集时间点到
+            if(TIM_Cnt == SMOKE_TIME) SEC_SMOKE_TEST = 1;//烟雾值采集时间点到
+            if(TIM_Cnt == LAser_TIME){
+							gpio_bit_reset(GPIOA, GPIO_PIN_8);//关闭激光管
+							gpio_bit_set(GPIOA, GPIO_PIN_15);
+						}
+        }
+        timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP); //清除中断标志位
+    }
+}
+
+/***********************   主函数    *******************************/
 
 int main(void)
 {
-    systick_config();
-
-    /* enable the LED1 GPIO clock */
-    rcu_periph_clock_enable(RCU_GPIOC);
-    /* configure LED1 GPIO port */
-    gpio_mode_set(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_13);
-    gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_13);
-    /* reset LED1 GPIO pin */
-    gpio_bit_reset(GPIOC,GPIO_PIN_13);
-
-
+    int k = 0;
+    uint32_t adc_ave = 0;
+    uint8_t adc_degree = 4;  //读取的次数的幂 2^4
+		
+		/***************** 初始化配置 ****************/
+    systick_config(); // 时钟配置
+    rcu_config();     // 外设时钟
+    gpio_init();			// GPIO
+    nvic_config();	  // NVIC
+    adc_config();			// ADC
+    timer_config();		// 定时器
+    AT24CXX_Init();		// 存储芯片
+    gd_eval_com_init(USART0);//串口 波特率 19200
+		DS18B20_GPIO_Init(); // 温度
+		SGP30_Init();  // TVOC
+    RS485_init_data();//通信数据
+	
+		//开启串口RBNR中断：读取数据缓冲区不为空中断和溢出
+    while (RESET == usart_flag_get(USART0 , USART_FLAG_TC));
+    usart_interrupt_enable(USART0, USART_INT_RBNE);
+		
+		// 此处源代码逻辑修改至 data.c 文件中，封装为函数执行
+		calibration_init();
+		
+    uint32_t temp;   // 临时变量
+		uint8_t y;       // 临时变量
     while(1)
     {
+			printf("temperature = %.2f\r\n", DS18B20_GetTemperture());
+			SGP30_Get_Value();
+			printf("CO2_val = %d, TVOC_val = %d\r\n", sgp_data.CO2_val, sgp_data.TVOC_val);
+			delay_ms(500);
+			
+				//1. 检测激光模拟量定时到
+        if(SEC_LDOP_TEST)
+        {
+            SEC_LDOP_TEST = 0;
 
-        gpio_bit_set(GPIOC,GPIO_PIN_13);
-        delay_1ms(1000);
-        gpio_bit_reset(GPIOC,GPIO_PIN_13);
-        delay_1ms(1000);
-        delay_ms(1);
-        delay_us(1);
+            adc_ave = 0;
+            for(k = 0; k < (1 << adc_degree); k++)
+            {
+                //读取ADC次数
+                adc_ave += get_adc_Average(ADC_CHANNEL_1) * 5;
+            }
+            //这里循环8次读取，因此>>4位就是除以16
+            adc_ave =  (adc_ave >> adc_degree);
 
+            adcData.LDOPowerIn.data_16 = adc_ave;		// 获得激光值
+						
+						printf("laser_val: %d\r\n", adcData.LDOPowerIn.data_16);
+						
+						//printf("temperature = %.2f\r\n", DS18B20_GetTemperture());
+						
+						
+            //adcData.LDOPowerIn.data_16 = get_adc(ADC_CHANNEL_1);		// 获得激光值  get_adc(channel)
+        }
+				
+				//2. 检测烟雾模拟量定时到
+        if(SEC_SMOKE_TEST)
+        {
+            SEC_SMOKE_TEST = 0;//清零模拟量检测20mS到定时标记
+
+            temp_adc = get_adc_Average(ADC_CHANNEL_2);//取16次AD的平均值
+            //平滑滤波
+            SmokeIns_group[count++] = temp_adc;//保存当前采集数据
+            if(count>39)           //已经采集足够40次
+            {
+                for(y=0; y<40; y++)	Paixu_group[y] = SmokeIns_group[y] ;
+                mabub(&Paixu_group[0],40);            //是冒泡排序算法，主要是简单，占用程序空间少
+                sum = 0;
+                for(y=4; y<36;)                             //计算去掉最大最小值各4个的数据和
+                    sum +=Paixu_group[y++];
+                group_trans( &SmokeIns_group[0],40 );      //将数组中数据前移一个位置，第一位置数据抛弃
+                //now_smoke = (uint16_t)( sum >> 4 ); //只取了16次采集数据的累积值的平均值
+                adcData.SmokeIn.data_16 = (uint16_t)( sum >> 5 ); //只取了16次采集数据的累积值的平均值
+
+								printf("smoke_val: %d\r\n", adcData.SmokeIn.data_16);
+							
+							
+                if(OBS_OVER_F)//OBS标记完成，计算减光率值
+                {
+                    if(OBS_BIAS &0X8000) //有偏置为负标记
+                    {
+                        adcData.SmokeIn.data_16 += (OBS_BIAS&0X7FFF);   //减去纯净气体下的偏置
+                        if ( adcData.SmokeIn.data_16 > 4095 )	adcData.SmokeIn.data_16 = 4095;
+                    }
+                    else
+                    {
+                        if(adcData.SmokeIn.data_16 > OBS_BIAS)	adcData.SmokeIn.data_16 -= OBS_BIAS;   //减去纯净气体下的偏置
+                        else adcData.SmokeIn.data_16 = 0;
+                    }
+                    temp = adcData.SmokeIn.data_16 << 4;
+                    adcData.OBS.data_16 = (uint16_t)(temp / OBS_Y.data_16); //求当前检测数据OBS值
+                } else adcData.OBS.data_16 = 0;
+								
+                count=39;//重新赋值计数器，保证下次采集数据落到最后位置
+            }
+        }
+				
+				// 3. 传输检测值
+        //RS485_PROG();//命令处理子函数
+				
     }
+}
+
+
+/**
+	  @brief: 求adc值总和
+*/
+uint16_t sumAdcs(uint16_t s[]) {
+    int i=0;
+    sum=0;
+    maxn=0;
+    minn=0xFFFF;
+    for(i=0; i<18; i++) {
+        if(maxn<s[i]) maxn=s[i];
+        if(minn>s[i]) minn=s[i];
+        sum+=s[i];
+    }
+    return (sum-maxn-minn)/16;
+}
+
+/**
+		\brief: 数组平移，将一个数组当中的数据向前移动一个位置，第一位数据抛弃
+*/
+void group_trans(uint16_t *group_array,uint8_t n)
+{
+    uchar group_i=1;
+    for(; group_i<n; group_i++)
+        *(group_array+group_i-1)=*(group_array+group_i);
+}
+
+//-------------------------------------------------------------------
+//函数说明：冒泡排序算法，主要是简单，占用程序空间少
+//*p：数组指针  n：要排序的数据个数  //最大数组字节可达到255个字节
+//输出：递增数组
+//-------------------------------------------------------------------
+void mabub(uint16_t *p,uint8_t n)//是冒泡排序算法，主要是简单，占用程序空间少
+{
+    uint8_t m,k,j,i;
+    uint16_t d;
+    k=0;
+    m=n-1;
+    while(k<m)
+    {   
+				j=m-1;
+        m=0;
+        for (i=k; i<=j; i++)
+            if ((*(p+i))>(*(p+i+1)))
+            {
+                d=*(p+i);
+                *(p+i)=*(p+i+1);
+                *(p+i+1)=d;
+                m=i;
+            }
+        j=k+1;
+        k=0;
+        for (i=m; i>=j; i--)
+            if ((*(p+i-1))>(*(p+i)))
+            {
+                d=*(p+i);
+                *(p+i)=*(p+i-1);
+                *(p+i-1)=d;
+                k=i;
+            }
+    }
+}
+
+
+/**
+    \brief      configure the nested vectored interrupt controller
+  */
+void nvic_config(void)
+{
+    nvic_irq_enable(USART0_IRQn, 1);
+    nvic_irq_enable(TIMER2_IRQn, 0);	//设置中断优先级
+}
+
+
+/*!
+    \brief      RCU configuration function
+*/
+void rcu_config(void)
+{
+    /* enable the GPIO clock */
+    rcu_periph_clock_enable(RCU_GPIOA);
+    rcu_periph_clock_enable(RCU_GPIOB);
+
+    /* ADCCLK = PCLK2/6 */
+    rcu_adc_clock_config(RCU_ADCCK_APB2_DIV6);//配置ADC时钟来源
+    rcu_periph_clock_enable(RCU_ADC);//使能ADC时钟
+
+    //修改为定时器2
+    rcu_periph_clock_enable(RCU_TIMER2);
+}
+
+
+/*!
+    \brief      TIMER configuration function
+*/
+void timer_config(void)
+{
+    timer_parameter_struct timer_initpara;
+    timer_deinit(TIMER2);
+    timer_struct_para_init(&timer_initpara);
+
+    /* TIMER2 定时器参数配置 */
+    timer_initpara.prescaler         = 72 - 1;//设置预分频值,72MHz时钟
+    timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;//对齐模式
+    timer_initpara.counterdirection  = TIMER_COUNTER_UP;//计数方向，向上计数
+    timer_initpara.period            = 1000 - 1;//设置自动重装载周期值
+    timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;//时钟分频因子
+    timer_initpara.repetitioncounter = 0;//重复计数器
+    timer_init(TIMER2,&timer_initpara);
+
+    timer_interrupt_enable(TIMER2, TIMER_INT_UP);//使能更新（溢出）中断
+    timer_enable(TIMER2);///使能TIMER
 }

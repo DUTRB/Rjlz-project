@@ -5,7 +5,7 @@
   * @version 		V1.0
   * @date   		2021.05.01
   * @brief			模拟IIC通信
-  * @attention		SCL：PB6，SDA：PB7。因为是用IO口模拟IIC通信，所以任意一个IO口都可以。
+  * @attention	因为是用IO口模拟IIC通信，所以任意一个IO口都可以。
   ******************************************************************************
  **/
 
@@ -61,7 +61,7 @@ u8 iic_read_sda(void)
   * @brief			IIC的IO口初始化函数
   * @param			None
   * @retval  		None
-  * @attention		SCL：PB6，SDA：PB7，均初始化为推挽输出，均默认输出高电平使总线为空闲状态
+  * @attention	均初始化为推挽输出，均默认输出高电平使总线为空闲状态
   ******************************************************************************
  **/
 
@@ -71,16 +71,11 @@ void IIC_Init(void)
     gpio_mode_set(SDA_GPIO, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, SDA_PIN);//推挽输出
     gpio_output_options_set(SDA_GPIO, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,  SDA_PIN);
 
-
-
     gpio_mode_set(SCL_GPIO, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, SCL_PIN);
-    //gpio_output_options_set(SCL_GPIO, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,  SCL_PIN);//推挽
     gpio_output_options_set(SCL_GPIO, GPIO_OTYPE_OD, GPIO_OSPEED_2MHZ, SCL_PIN);//开漏
-
 
     gpio_bit_set(SCL_GPIO, SCL_PIN);//SCL输出高电平，将总线置为空闲状态
     gpio_bit_set(SDA_GPIO, SDA_PIN);//SDA输出高电平，将总线置为空闲状态
-
 }
 
 
@@ -134,15 +129,7 @@ void IIC_Stop(void)
     //IIC_SDA = 0;
     iic_write_scl(0);
     iic_write_sda(0);
-
-
     //Delay_us(4);	//延时4us，确保SCL=0、SDA=0稳定
-    /* 正点原子和普中这里的程序顺序不同：
-       正点原子：Delay_us(4);IIC_SCL = 1;
-       普中：IIC_SCL = 1;Delay_us(4);
-       我觉得普中的比较正确，SCL=1要稳定下来，再让SDA跳变。为了保险，可以在上面写个延时4us，确保SCL=0、SDA=0也稳定
-    */
-
     //IIC_SCL = 1;
     iic_write_scl(1);
     Delay_us(4);	//延时4us，稳定SCL=1、SDA=0，普中说要>4us
@@ -185,7 +172,6 @@ u8 IIC_Wait_ACK(void)
     iic_write_scl(0);
     return 0;
 }
-
 
 
 /**

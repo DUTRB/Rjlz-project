@@ -28,6 +28,7 @@
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_misc.h \
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_cmp.h \
   ..\User\systick.h D:\keil_539\ARM\ARMCLANG\include\stdlib.h \
-  D:\keil_539\ARM\ARMCLANG\include\stdio.h ..\User\gd32e23x_it.h \
-  ..\Hardware\data\data.h ..\Hardware\EEPROM\24cxx.h \
-  ..\Hardware\IIC\IIC.h
+  D:\keil_539\ARM\ARMCLANG\include\stdio.h \
+  ..\Hardware\utility\gd32f350r_eval.h ..\User\gd32e23x_it.h \
+  ..\Hardware\data\data.h ..\Hardware\IIC\IIC.h \
+  ..\Hardware\EEPROM\24cxx.h

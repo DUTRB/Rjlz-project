@@ -17,13 +17,8 @@ uint16_t	OBS_BIAS				;//纯净空气本底值
 uint8_t	BD_0_FLAG  			  ; //氮气标定返回标记，连续8次减光率发送168后恢复正常，中间不能断电
 uint8_t	OBS_FLAG					;//OBS标定标志位,bit 0---空气有烟标定,bit 1-----氮气无烟标定,bit 2-----OBS标定完成
 
-
-
-uint8_t	temp8;   // 临时变量
-uint16_t temp16; // 临时变量
-
-void calibration_init() {
-    temp8 = AT24CXX_ReadOneByte(255);	//如果不是第一次初始化，是在使用过程中想检查是否正常，直接读即可，不需要再写入。避免了每次检查都写入。
+void calibration_init(){
+	temp8 = AT24CXX_ReadOneByte(255);	//如果不是第一次初始化，是在使用过程中想检查是否正常，直接读即可，不需要再写入。避免了每次检查都写入。
     if(temp8 == 0X55)
     {
         //读取
@@ -65,35 +60,6 @@ void calibration_init() {
         temp16 = AT24CXX_ReadLenByte(0x0b,2);
         if(temp16 != OBS_BIAS)	AT24CXX_WriteLenByte(0x0b,OBS_BIAS,2);
     }
-		return;
-}
 
-/*!
-    \brief      GPIO 初始化
-*/
-void gpio_init(void)
-{
-    //rcu_periph_clock_enable(RCU_GPIOA);
-		// 源程序中为PA0，对应原电路图中的标定线1 在新版中为 PB7
-    gpio_mode_set(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_7);
-    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,  GPIO_PIN_7);
-    gpio_bit_set(GPIOB, GPIO_PIN_7);
-
-    /*RS485-C PB4 高1为发送，低0为接收*/  
-		// 源程序中为 PA5
-    gpio_mode_set(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);
-    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,  GPIO_PIN_4);
-
-    /******************* 双色 Laser 引脚闪烁配置 **********************/
-    //RED-Laser_FLASH PA8
-    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
-    //gpio_bit_set(GPIOA, GPIO_PIN_8);
-    gpio_bit_set(GPIOA, GPIO_PIN_8);
-
-    //BLUE-Laser_FLASH PA15
-    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
-    gpio_bit_reset(GPIOA, GPIO_PIN_15);
-    //gpio_bit_reset(GPIOA, GPIO_PIN_15);
+	
 }

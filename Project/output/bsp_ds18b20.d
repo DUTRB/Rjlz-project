@@ -1,6 +1,5 @@
-./output/data.o: ..\Hardware\data\data.c ..\Hardware\data\data.h \
-  D:\keil_539\ARM\ARMCLANG\include\stdlib.h \
-  D:\keil_539\ARM\ARMCLANG\include\stdio.h \
+./output/bsp_ds18b20.o: ..\Hardware\DS18B20\bsp_ds18b20.c \
+  ..\Hardware\DS18B20\bsp_ds18b20.h \
   ..\Firmware\CMSIS\GD\GD32E23x\Include\gd32e23x.h \
   D:\keil_539\packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm23.h \
   D:\keil_539\ARM\ARMCLANG\include\stdint.h \
@@ -28,5 +27,5 @@
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_wwdgt.h \
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_misc.h \
   ..\Firmware\GD32E23x_standard_peripheral\Include\gd32e23x_cmp.h \
-  ..\Hardware\IIC\IIC.h ..\User\systick.h ..\Hardware\EEPROM\24cxx.h \
-  ..\Hardware\utility\gd32f350r_eval.h
+  ..\Hardware\usart\bsp_usart.h ..\User\systick.h \
+  D:\keil_539\ARM\ARMCLANG\include\stdio.h

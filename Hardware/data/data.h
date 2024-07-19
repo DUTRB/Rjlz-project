@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "gd32e23x.h"
+#include "IIC.h"
+#include "24cxx.h"
+
 //#include "gd32f350r_eval.h"
 
 //定义AD模拟输入数据
@@ -45,6 +48,7 @@ extern data Smoke_AIR;
 extern data OBS_N2;
 extern data Smoke_N2;
 
+void calibration_init(void);
 
 
 #endif
