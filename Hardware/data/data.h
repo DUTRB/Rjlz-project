@@ -20,6 +20,7 @@ typedef struct
 {
     data OBS;//减光率
     data LDOPowerIn;//激光值
+		data LDO_Blue_PowerIn;//激光值
     data SmokeIn;//烟雾值
 } DataIn;
 
@@ -49,7 +50,7 @@ extern data OBS_N2;
 extern data Smoke_N2;
 
 void calibration_init(void);
-
+void gpio_init(void);
 
 #endif
 

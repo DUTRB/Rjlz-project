@@ -16,11 +16,12 @@ uint16_t SmokeIns_group[40]= {0}; // 采集数组
 uint16_t Paixu_group[40] = {0};	  // 排序数组
 
 #define LEDP_TIME 25   //激光值采集时间点
-#define SMOKE_TIME 50  //烟雾值采集时间点
+#define BLUE_LEDP_TIME 50
+#define SMOKE_TIME 100  //烟雾值采集时间点
 #define LAser_TIME 500 //关闭激光时间点
 uint8_t SEC_SMOKE_TEST = 0;  //烟雾值采集时间到标记,=0 正在进行,=1 完成
 uint8_t SEC_LDOP_TEST = 0;   //激光值采集时间到标记,=0 正在进行,=1 完成
-
+uint8_t SEC_BLUE_LDOP_TEST = 0; 
 
 uint16_t TIM_Cnt = 0;  //TIM定时器给Laser_FLASH驱动激光二极管模拟PWM
 
@@ -38,7 +39,7 @@ void rcu_config(void);   //时钟配置函数
 void timer_config(void); //定时器配置函数 　1ms
 uint16_t get_adc(uint8_t ch);  //获得ADC数值
 uint16_t get_adc_Average(uint8_t channel);   //获得ADC平均值
-void gpio_init(void);   //GPIO 初始化
+//void gpio_init(void);   //GPIO 初始化
 void nvic_config(void);  //NVIC 初始化
 void send_data(uint32_t COM,const uint16_t sendbuff);  //发送数据
 void mabub(uint16_t *p,uint8_t n);  //冒泡排序

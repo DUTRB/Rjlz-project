@@ -85,15 +85,19 @@ void gpio_init(void)
     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,  GPIO_PIN_4);
 
     /******************* Ë«É« Laser Òý½ÅÉÁË¸ÅäÖÃ **********************/
+	
+		//BLUE-Laser_FLASH PA15
+			gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
+			gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
+			//gpio_bit_reset(GPIOA, GPIO_PIN_15);
+			gpio_bit_reset(GPIOA, GPIO_PIN_15);
+	
     //RED-Laser_FLASH PA8
     gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
     gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
     //gpio_bit_set(GPIOA, GPIO_PIN_8);
-    gpio_bit_set(GPIOA, GPIO_PIN_8);
+    gpio_bit_reset(GPIOA, GPIO_PIN_8);
 
-    //BLUE-Laser_FLASH PA15
-    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
-    gpio_bit_reset(GPIOA, GPIO_PIN_15);
-    //gpio_bit_reset(GPIOA, GPIO_PIN_15);
+    
 }
+

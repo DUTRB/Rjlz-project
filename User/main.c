@@ -32,16 +32,17 @@ void TIMER2_IRQHandler(void)
         {
             TIM_Cnt = 0;
 						// 激光闪亮设置
-            gpio_bit_set(GPIOA, GPIO_PIN_8);
-						gpio_bit_reset(GPIOA, GPIO_PIN_15);
+						gpio_bit_set(GPIOA, GPIO_PIN_15);
+						gpio_bit_set(GPIOA, GPIO_PIN_8);
         }
         else
         {
             if(TIM_Cnt == LEDP_TIME) SEC_LDOP_TEST = 1;//激光值采集时间点到
+						if(TIM_Cnt == BLUE_LEDP_TIME) SEC_BLUE_LDOP_TEST = 1;
             if(TIM_Cnt == SMOKE_TIME) SEC_SMOKE_TEST = 1;//烟雾值采集时间点到
             if(TIM_Cnt == LAser_TIME){
+							gpio_bit_reset(GPIOA, GPIO_PIN_15);
 							gpio_bit_reset(GPIOA, GPIO_PIN_8);//关闭激光管
-							gpio_bit_set(GPIOA, GPIO_PIN_15);
 						}
         }
         timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP); //清除中断标志位
@@ -54,6 +55,7 @@ int main(void)
 {
     int k = 0;
     uint32_t adc_ave = 0;
+		uint32_t adc_blue_ave = 0;
     uint8_t adc_degree = 4;  //读取的次数的幂 2^4
 		
 		/***************** 初始化配置 ****************/
@@ -82,7 +84,7 @@ int main(void)
     {
 			printf("temperature = %.2f\r\n", DS18B20_GetTemperture());
 			SGP30_Get_Value();
-			printf("CO2_val = %d, TVOC_val = %d\r\n", sgp_data.CO2_val, sgp_data.TVOC_val);
+			//printf("CO2_val = %d, TVOC_val = %d\r\n", sgp_data.CO2_val, sgp_data.TVOC_val);
 			delay_ms(500);
 			
 				//1. 检测激光模拟量定时到
@@ -94,14 +96,39 @@ int main(void)
             for(k = 0; k < (1 << adc_degree); k++)
             {
                 //读取ADC次数
-                adc_ave += get_adc_Average(ADC_CHANNEL_1) * 5;
+								// 此处的channel 5代表红光检测反馈值
+                adc_ave += get_adc_Average(ADC_CHANNEL_5) * 5;
             }
             //这里循环8次读取，因此>>4位就是除以16
             adc_ave =  (adc_ave >> adc_degree);
 
             adcData.LDOPowerIn.data_16 = adc_ave;		// 获得激光值
 						
-						printf("laser_val: %d\r\n", adcData.LDOPowerIn.data_16);
+						printf("RED_laser_val: %d\r\n", adcData.LDOPowerIn.data_16);
+						
+						//printf("temperature = %.2f\r\n", DS18B20_GetTemperture());
+						
+						
+            //adcData.LDOPowerIn.data_16 = get_adc(ADC_CHANNEL_1);		// 获得激光值  get_adc(channel)
+        }
+				
+				if(SEC_BLUE_LDOP_TEST)
+        {
+            SEC_BLUE_LDOP_TEST = 0;
+
+            adc_blue_ave = 0;
+            for(k = 0; k < (1 << adc_degree); k++)
+            {
+                //读取ADC次数
+								// 此处的channel 5代表红光检测反馈值
+                adc_blue_ave += get_adc_Average(ADC_CHANNEL_6) * 5;
+            }
+            //这里循环8次读取，因此>>4位就是除以16
+            adc_blue_ave =  (adc_blue_ave >> adc_degree);
+
+            adcData.LDOPowerIn.data_16 = adc_blue_ave;		// 获得激光值
+						
+						printf("BLUE_laser_val: %d\r\n", adcData.LDO_Blue_PowerIn.data_16);
 						
 						//printf("temperature = %.2f\r\n", DS18B20_GetTemperture());
 						
@@ -114,7 +141,7 @@ int main(void)
         {
             SEC_SMOKE_TEST = 0;//清零模拟量检测20mS到定时标记
 
-            temp_adc = get_adc_Average(ADC_CHANNEL_2);//取16次AD的平均值
+            temp_adc = get_adc_Average(ADC_CHANNEL_4);//取16次AD的平均值
             //平滑滤波
             SmokeIns_group[count++] = temp_adc;//保存当前采集数据
             if(count>39)           //已经采集足够40次

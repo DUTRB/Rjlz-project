@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\output\GD32E230C_START.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\output\GD32E230C_START.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6210000: Last Updated: Thu Jul 18 16:22:19 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6210000: Last Updated: Sun Jul 21 15:05:36 2024
 <BR><P>
-<H3>Maximum Stack Usage =        228 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        236 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; calibration_init &rArr; AT24CXX_ReadLenByte &rArr; AT24CXX_ReadOneByte &rArr; IIC_Read_Byte &rArr; IIC_NACK &rArr; Delay_us &rArr; delay_1us &rArr; __aeabi_ui2f &rArr; _float_epilogue
 <P>
@@ -733,7 +733,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_gd32e23x.o(.text)
 </UL>
-<P><STRONG><a name="[14]"></a>TIMER2_IRQHandler</STRONG> (Thumb, 164 bytes, Stack size 16 bytes, main.o(.text.TIMER2_IRQHandler))
+<P><STRONG><a name="[14]"></a>TIMER2_IRQHandler</STRONG> (Thumb, 180 bytes, Stack size 16 bytes, main.o(.text.TIMER2_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TIMER2_IRQHandler &rArr; timer_interrupt_flag_get
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;timer_interrupt_flag_clear
@@ -1089,8 +1089,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[22]"></a>main</STRONG> (Thumb, 540 bytes, Stack size 32 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 228<LI>Call Chain = main &rArr; calibration_init &rArr; AT24CXX_ReadLenByte &rArr; AT24CXX_ReadOneByte &rArr; IIC_Read_Byte &rArr; IIC_NACK &rArr; Delay_us &rArr; delay_1us &rArr; __aeabi_ui2f &rArr; _float_epilogue
+<P><STRONG><a name="[22]"></a>main</STRONG> (Thumb, 620 bytes, Stack size 40 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 236<LI>Call Chain = main &rArr; calibration_init &rArr; AT24CXX_ReadLenByte &rArr; AT24CXX_ReadOneByte &rArr; IIC_Read_Byte &rArr; IIC_NACK &rArr; Delay_us &rArr; delay_1us &rArr; __aeabi_ui2f &rArr; _float_epilogue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;group_trans
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mabub
