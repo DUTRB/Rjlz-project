@@ -14,7 +14,7 @@ void adc_config(void)
 		*/
 		
     // 模拟输入模式
-    gpio_mode_set(GPIOA,GPIO_MODE_ANALOG,GPIO_PUPD_NONE,GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
+    gpio_mode_set(GPIOA,GPIO_MODE_ANALOG,GPIO_PUPD_NONE,GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7);
 
     // ADC设置为规则组 一共使用一个通道
     adc_channel_length_config(ADC_REGULAR_CHANNEL,1);

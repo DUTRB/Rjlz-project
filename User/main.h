@@ -17,8 +17,8 @@ uint16_t Paixu_group[40] = {0};	  // 排序数组
 
 #define LEDP_TIME 25   //激光值采集时间点
 #define BLUE_LEDP_TIME 50
-#define SMOKE_TIME 100  //烟雾值采集时间点
-#define LAser_TIME 500 //关闭激光时间点
+#define SMOKE_TIME 100  //烟雾值采集1时间点
+#define LAser_TIME 50 //关闭激光时间点
 uint8_t SEC_SMOKE_TEST = 0;  //烟雾值采集时间到标记,=0 正在进行,=1 完成
 uint8_t SEC_LDOP_TEST = 0;   //激光值采集时间到标记,=0 正在进行,=1 完成
 uint8_t SEC_BLUE_LDOP_TEST = 0; 
@@ -44,4 +44,6 @@ void nvic_config(void);  //NVIC 初始化
 void send_data(uint32_t COM,const uint16_t sendbuff);  //发送数据
 void mabub(uint16_t *p,uint8_t n);  //冒泡排序
 void group_trans(uint16_t *group_array,uint8_t n);//将数组中数据前移一个位置，第一位置抛弃
-
+u16 middleValueFilter(void);
+u16 averageFilter(void);
+u16 Get_MS1100_ADC_Value(u16 num);

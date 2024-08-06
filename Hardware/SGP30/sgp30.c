@@ -278,3 +278,23 @@ void SGP30_Get_Value(void)
 		sgp_data.TVOC_val = sgp30_dat & 0x0000ffff;         //获取TVOC的值
 		return ;
 }
+uint32_t SGP30_Get_CO2_Value(void)
+{
+		uint32_t sgp30_dat;          	//定义SGP30读取到的数据
+		
+    SGP30_Write_cmd(0x20,0x08);
+		sgp30_dat = SGP30_Read();                  //读取SGP30的值
+		sgp_data.CO2_val = (sgp30_dat & 0xffff0000) >> 16;  //获取CO2的值
+		//sgp_data.TVOC_val = sgp30_dat & 0x0000ffff;         //获取TVOC的值
+		return sgp_data.CO2_val;
+}
+uint32_t SGP30_Get_TVOC_Value(void)
+{
+		uint32_t sgp30_dat;          	//定义SGP30读取到的数据
+		
+    SGP30_Write_cmd(0x20,0x08);
+		sgp30_dat = SGP30_Read();                  //读取SGP30的值
+		//sgp_data.CO2_val = (sgp30_dat & 0xffff0000) >> 16;  //获取CO2的值
+		sgp_data.TVOC_val = sgp30_dat & 0x0000ffff;         //获取TVOC的值
+		return sgp_data.TVOC_val;
+}

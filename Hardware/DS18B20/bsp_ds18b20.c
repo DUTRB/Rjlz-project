@@ -51,7 +51,7 @@ uint8_t DS18B20_Read_Byte(void)
 			// 对延时精度要求非常高！！！！
 			// 读数据时此处延时为等待数据输出
 			// 大于6us数据不稳定，大于10us数据直接输出0
-        delay_us(6);
+        delay_us(5);
         dat>>=1;
         if( DQ_GET() )
         {
